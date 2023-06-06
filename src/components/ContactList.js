@@ -1,7 +1,16 @@
+import { useDispatch, useSelector } from 'react-redux';
 import { DeleteButton } from './App.styled';
 import PropTypes, { objectOf, string } from 'prop-types';
+import { getContacts, getFilter } from 'redux/selectors';
+import { deleteContact } from 'redux/contactsSlice';
+export const ContactList = () => {
+  const contacts = useSelector(getContacts);
+  const filter = useSelector(getFilter);
+  const dispatch = useDispatch();
 
-export const ContactList = ({ contacts, filter, handleDelete }) => {
+  const handleDelete = e => {
+    dispatch(deleteContact(e.target.id));
+  };
   return (
     <ul>
       {contacts &&
@@ -22,6 +31,6 @@ export const ContactList = ({ contacts, filter, handleDelete }) => {
 
 ContactList.propTypes = {
   contacts: PropTypes.arrayOf(objectOf(string)),
-  filter: PropTypes.string.isRequired,
-  handleDelete: PropTypes.func.isRequired,
+  filter: PropTypes.string,
+  handleDelete: PropTypes.func,
 };

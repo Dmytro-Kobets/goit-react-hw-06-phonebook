@@ -1,13 +1,26 @@
+import { useDispatch, useSelector } from 'react-redux';
 import { Input, Form, Button } from './App.styled';
 import PropTypes from 'prop-types';
+import { addContact } from 'redux/contactsSlice';
+import { getContacts } from 'redux/selectors';
 
-export const ContactForm = ({
-  name,
-  number,
-  handleChangeName,
-  handleChangeNumber,
-  handleSubmit,
-}) => {
+export const ContactForm = () => {
+  const dispatch = useDispatch();
+  const contacts = useSelector(getContacts);
+  const handleSubmit = e => {
+    e.preventDefault();
+    const form = e.target;
+    const alreadyInContacts = contacts.find(
+      contact => contact.name === form.elements.name.value
+    );
+
+    alreadyInContacts
+      ? alert(`${form.elements.name.value} is already in contacts`)
+      : dispatch(
+          addContact(form.elements.name.value, form.elements.number.value)
+        );
+    form.reset();
+  };
   return (
     <Form onSubmit={handleSubmit}>
       <label>Name</label>
@@ -17,8 +30,6 @@ export const ContactForm = ({
         pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
         title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
         required
-        onChange={handleChangeName}
-        value={name}
       />
       <label>Phone</label>
       <Input
@@ -27,8 +38,6 @@ export const ContactForm = ({
         pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
         title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
         required
-        onChange={handleChangeNumber}
-        value={number}
       />
       <Button type="submit">Add Contact</Button>
     </Form>
@@ -36,9 +45,7 @@ export const ContactForm = ({
 };
 
 ContactForm.propTypes = {
-  name: PropTypes.string.isRequired,
-  number: PropTypes.string.isRequired,
-  handleChangeName: PropTypes.func.isRequired,
-  handleChangeNumber: PropTypes.func.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
+  name: PropTypes.string,
+  number: PropTypes.string,
+  handleSubmit: PropTypes.func,
 };
